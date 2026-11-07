@@ -304,9 +304,9 @@
       .nav-links a:not(.nav-cta) { display: none; }
     }
   </style>
-<!-- Thư viện Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <!-- Thư viện Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <header class="site-header">
@@ -536,104 +536,111 @@
       document.getElementById("memory-prompt").textContent = prompts[Math.floor(Math.random() * prompts.length)];
     });
 
-    // 4. Quản lý Sổ Lưu Bút & Danh Sách Tham Dự (Lưu trong LocalStorage)
-    const defaultData = [
-    ];
+    // 4. Quản lý Sổ Lưu Bút & Danh Sách Tham Dự (Firebase Firestore Realtime)
+    const firebaseConfig = {
+      apiKey: "AIzaSyAx96ixM3qX9us76R9kkhFkJslLmX2JSxs",
+      authDomain: "class12a-d4eb3.firebaseapp.com",
+      projectId: "class12a-d4eb3",
+      storageBucket: "class12a-d4eb3.firebasestorage.app",
+      messagingSenderId: "737731998936",
+      appId: "1:737731998936:web:70a4b557b01ff8f8d613ad",
+      measurementId: "G-BE57V2J4E9"
+    };
 
-    function getStoredEntries() {
-      const data = localStorage.getItem("12a_rsvp_entries");
-      return data ? JSON.parse(data) : defaultData;
-    }
-
-    function renderBoard() {
-      const entries = getStoredEntries();
-      const wishesContainer = document.getElementById("wishes-container");
-      const attendeesContainer = document.getElementById("attendees-container");
-      
-      document.getElementById("wish-count").textContent = `${entries.length} lời chúc`;
-      document.getElementById("attendee-count").textContent = `${entries.length} người`;
-
-      wishesContainer.innerHTML = entries.map(item => `
-        <div class="wish-item">
-          <div class="wish-item-header">
-            <span class="wish-author">${escapeHtml(item.name)}</span>
-            <span class="wish-role">${escapeHtml(item.role)}</span>
-          </div>
-          <p class="wish-text">“${escapeHtml(item.message)}”</p>
-          <span class="wish-time">${item.time}</span>
-        </div>
-      `).join("");
-
-      attendeesContainer.innerHTML = entries.map(item => `
-        <div class="attendee-item">
-          <span class="attendee-name">✓ ${escapeHtml(item.name)}</span>
-          <span class="attendee-tag">${escapeHtml(item.role)}</span>
-        </div>
-      `).join("");
-    }
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
     function escapeHtml(str) {
+      if (!str) return '';
       return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]));
     }
 
-    // Xử lý gửi RSVP Form
-    document.getElementById("rsvp-form").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const name = document.getElementById("guest-name").value.trim();
-      const role = document.getElementById("guest-role").value;
-      const message = document.getElementById("guest-message").value.trim();
+    // Xử lý gửi RSVP / Lưu Bút Form lên Firebase
+    const rsvpForm = document.getElementById("rsvp-form");
+    if (rsvpForm) {
+      rsvpForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const name = document.getElementById("guest-name").value.trim();
+        const role = document.getElementById("guest-role").value;
+        const message = document.getElementById("guest-message").value.trim();
 
-      if (!name || !role || !message) return;
+        if (!name || !role || !message) return;
 
-      const entries = getStoredEntries();
-      entries.unshift({
-        name: name,
-        role: role,
-        message: message,
-        time: "Vừa xong"
+        try {
+          await db.collection("luubuot").add({
+            name: name,
+            role: role,
+            message: message,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+
+          alert("Cảm ơn bạn! Thông tin và lời chúc đã được gửi thành công vào Sổ Lưu Bút 12A.");
+          rsvpForm.reset();
+          document.getElementById("guestbook").scrollIntoView({ behavior: "smooth" });
+        } catch (error) {
+          console.error("Lỗi gửi dữ liệu Firebase:", error);
+          alert("Có lỗi xảy ra khi gửi. Vui lòng thử lại!");
+        }
       });
+    }
 
-      localStorage.setItem("12a_rsvp_entries", JSON.stringify(entries));
-      renderBoard();
-      
-      alert("Cảm ơn bạn! Thông tin và lời chúc đã được thêm vào Sổ Lưu Bút của 12A.");
-      e.target.reset();
+    // Lắng nghe dữ liệu Realtime từ Firebase Firestore
+    db.collection("luubuot")
+      .orderBy("createdAt", "desc")
+      .onSnapshot((snapshot) => {
+        const wishesContainer = document.getElementById("wishes-container");
+        const attendeesContainer = document.getElementById("attendees-container");
+        const wishCount = document.getElementById("wish-count");
+        const attendeeCount = document.getElementById("attendee-count");
 
-      document.getElementById("guestbook").scrollIntoView({ behavior: "smooth" });
-    });
+        if (!wishesContainer || !attendeesContainer) return;
 
-    // Khởi tạo bảng ban đầu
-    renderBoard();
+        if (snapshot.empty) {
+          wishCount.textContent = "0 lời chúc";
+          attendeeCount.textContent = "0 người";
+          wishesContainer.innerHTML = '<p style="color: var(--muted); font-style: italic;">Chưa có lời chúc nào. Hãy là người đầu tiên gửi nhé!</p>';
+          attendeesContainer.innerHTML = '<p style="color: var(--muted);">Chưa có người đăng ký.</p>';
+          return;
+        }
+
+        wishCount.textContent = `${snapshot.size} lời chúc`;
+        attendeeCount.textContent = `${snapshot.size} người`;
+
+        let wishesHTML = "";
+        let attendeesHTML = "";
+
+        snapshot.forEach((doc) => {
+          const item = doc.data();
+          
+          let timeStr = "Vừa xong";
+          if (item.createdAt && item.createdAt.toDate) {
+            const date = item.createdAt.toDate();
+            timeStr = date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ' ' + date.toLocaleDateString('vi-VN');
+          }
+
+          wishesHTML += `
+            <div class="wish-item">
+              <div class="wish-item-header">
+                <span class="wish-author">${escapeHtml(item.name)}</span>
+                <span class="wish-role">${escapeHtml(item.role || 'Khách')}</span>
+              </div>
+              <p class="wish-text">“${escapeHtml(item.message)}”</p>
+              <span class="wish-time">${timeStr}</span>
+            </div>
+          `;
+
+          attendeesHTML += `
+            <div class="attendee-item">
+              <span class="attendee-name">✓ ${escapeHtml(item.name)}</span>
+              <span class="attendee-tag">${escapeHtml(item.role || 'Khách')}</span>
+            </div>
+          `;
+        });
+
+        wishesContainer.innerHTML = wishesHTML;
+        attendeesContainer.innerHTML = attendeesHTML;
+      });
   </script>
-  <!-- Khung Sổ Lưu Bút -->
-<div class="luu-but-container" style="max-width: 600px; margin: 30px auto; padding: 20px; font-family: sans-serif; background: #ffffff; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-    <h2 style="text-align: center; color: #333;">📖 Sổ Lưu Bút Kỷ Yếu 12A</h2>
-    
-    <form id="wishForm" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
-        <input type="text" id="senderName" placeholder="Tên của bạn / Biệt danh..." required style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
-        <textarea id="wishMessage" placeholder="Nhập lời chúc, kỷ niệm khó quên..." rows="4" required style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;"></textarea>
-        <button type="submit" style="padding: 10px; background: #4f46e5; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Gửi Lời Chúc 🚀</button>
-    </form>
-
-    <h3 style="color: #444;">Danh sách lời chúc:</h3>
-    <div id="wishList" style="display: flex; flex-direction: column; gap: 10px;">
-        <p style="color: #666;">Đang tải lời chúc...</p>
-    </div>
-</div>
-<!-- Khung Sổ Lưu Bút -->
-<div class="luu-but-container" style="max-width: 600px; margin: 30px auto; padding: 20px; font-family: sans-serif; background: #ffffff; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-    <h2 style="text-align: center; color: #333;">📖 Sổ Lưu Bút Kỷ Yếu 12A</h2>
-    
-    <form id="wishForm" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
-        <input type="text" id="senderName" placeholder="Tên của bạn / Biệt danh..." required style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
-        <textarea id="wishMessage" placeholder="Nhập lời chúc, kỷ niệm khó quên..." rows="4" required style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;"></textarea>
-        <button type="submit" style="padding: 10px; background: #4f46e5; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Gửi Lời Chúc 🚀</button>
-    </form>
-
-    <h3 style="color: #444;">Danh sách lời chúc:</h3>
-    <div id="wishList" style="display: flex; flex-direction: column; gap: 10px;">
-        <p style="color: #666;">Đang tải lời chúc...</p>
-    </div>
-</div>
 </body>
 </html>
+```eof
