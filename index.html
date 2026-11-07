@@ -1,7 +1,5 @@
 <!doctype html>
 <html lang="vi">
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -306,6 +304,9 @@
       .nav-links a:not(.nav-cta) { display: none; }
     }
   </style>
+<!-- Thư viện Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <header class="site-header">
@@ -604,5 +605,35 @@
     // Khởi tạo bảng ban đầu
     renderBoard();
   </script>
+  <!-- Khung Sổ Lưu Bút -->
+<div class="luu-but-container" style="max-width: 600px; margin: 30px auto; padding: 20px; font-family: sans-serif; background: #ffffff; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <h2 style="text-align: center; color: #333;">📖 Sổ Lưu Bút Kỷ Yếu 12A</h2>
+    
+    <form id="wishForm" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+        <input type="text" id="senderName" placeholder="Tên của bạn / Biệt danh..." required style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+        <textarea id="wishMessage" placeholder="Nhập lời chúc, kỷ niệm khó quên..." rows="4" required style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;"></textarea>
+        <button type="submit" style="padding: 10px; background: #4f46e5; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Gửi Lời Chúc 🚀</button>
+    </form>
+
+    <h3 style="color: #444;">Danh sách lời chúc:</h3>
+    <div id="wishList" style="display: flex; flex-direction: column; gap: 10px;">
+        <p style="color: #666;">Đang tải lời chúc...</p>
+    </div>
+</div>
+<!-- Khung Sổ Lưu Bút -->
+<div class="luu-but-container" style="max-width: 600px; margin: 30px auto; padding: 20px; font-family: sans-serif; background: #ffffff; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <h2 style="text-align: center; color: #333;">📖 Sổ Lưu Bút Kỷ Yếu 12A</h2>
+    
+    <form id="wishForm" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+        <input type="text" id="senderName" placeholder="Tên của bạn / Biệt danh..." required style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+        <textarea id="wishMessage" placeholder="Nhập lời chúc, kỷ niệm khó quên..." rows="4" required style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;"></textarea>
+        <button type="submit" style="padding: 10px; background: #4f46e5; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Gửi Lời Chúc 🚀</button>
+    </form>
+
+    <h3 style="color: #444;">Danh sách lời chúc:</h3>
+    <div id="wishList" style="display: flex; flex-direction: column; gap: 10px;">
+        <p style="color: #666;">Đang tải lời chúc...</p>
+    </div>
+</div>
 </body>
 </html>
