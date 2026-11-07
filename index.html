@@ -199,6 +199,7 @@
       box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
+      position: relative;
     }
     .board-card h3 {
       margin: 0 0 20px;
@@ -261,6 +262,23 @@
       display: block;
       text-align: right;
     }
+    
+    /* Nút xóa dành riêng cho admin */
+    .btn-delete {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #fee2e2;
+      color: #dc2626;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: none;
+    }
+    .admin-active .btn-delete { display: inline-block; }
 
     .attendee-list {
       display: flex;
@@ -308,7 +326,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
-<body>
+<body id="page-body">
   <header class="site-header">
     <nav class="nav wrap" aria-label="Điều hướng chính">
       <a class="brand" href="#top"><span class="brand-mark">12</span><span>CLASS 12A <span style="opacity:0.55">/</span> YEARBOOK</span></a>
@@ -405,7 +423,6 @@
             <a class="btn btn-primary" id="map-button" href="https://www.google.com/maps/search/?api=1&query=Tr%C6%B0%E1%BB%9Dng+THPT+Nam+S%C3%A1ch+2+An+L%C3%A2m+Nam+S%C3%A1ch+H%E1%BA%A3i+D%C6%B0%C6%A1ng" target="_blank" rel="noopener">Chỉ đường Google Maps ↗</a>
           </div>
           <div class="map-frame">
-            <!-- Pinned directly to Trường THPT Nam Sách 2, Hải Dương -->
             <iframe id="map-frame" title="Bản đồ Trường THPT Nam Sách 2" loading="lazy" src="https://maps.google.com/maps?q=Tr%C6%B0%E1%BB%9Dng+THPT+Nam+S%C3%A1ch+2,+An+L%C3%A2m,+Nam+S%C3%A1ch,+H%E1%BA%A3i+D%C6%B0%C6%A1ng&t=&z=16&ie=UTF8&iwloc=&output=embed"></iframe>
           </div>
         </div>
@@ -484,6 +501,8 @@
   <div class="floating-tools">
     <button class="round-tool" id="music-toggle" title="Bật/Tắt nhạc">♫</button>
     <button class="round-tool" id="memory-open" title="Bốc thăm ký ức">✦</button>
+    <!-- Nút kích hoạt Admin -->
+    <button class="round-tool" id="admin-toggle" title="Quản trị viên xóa lời chúc" style="background: #a94e34; font-size: 0.8rem; font-weight: bold;">Admin</button>
   </div>
   
   <audio id="bg-music" loop preload="none"><source src="assets/thanh-xuan.mp3" type="audio/mpeg" /></audio>
@@ -536,7 +555,7 @@
       document.getElementById("memory-prompt").textContent = prompts[Math.floor(Math.random() * prompts.length)];
     });
 
-    // 4. Quản lý Sổ Lưu Bút & Danh Sách Tham Dự (Firebase Firestore Realtime)
+    // 4. Quản lý Sổ Lưu Bút & Danh Sách Tham Dự (Firebase Firestore Realtime + Admin Delete)
     const firebaseConfig = {
       apiKey: "AIzaSyAx96ixM3qX9us76R9kkhFkJslLmX2JSxs",
       authDomain: "class12a-d4eb3.firebaseapp.com",
@@ -554,6 +573,40 @@
       if (!str) return '';
       return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]));
     }
+
+    // Xử lý tính năng đăng nhập Admin (Mật khẩu mặc định là: 123456 - bạn có thể đổi bên dưới)
+    const adminToggleBtn = document.getElementById("admin-toggle");
+    const pageBody = document.getElementById("page-body");
+    
+    adminToggleBtn.addEventListener("click", () => {
+      if (pageBody.classList.contains("admin-active")) {
+        pageBody.classList.remove("admin-active");
+        adminToggleBtn.style.background = "#a94e34";
+        alert("Đã tắt chế độ Quản trị viên.");
+      } else {
+        const password = prompt("Nhập mật khẩu quản trị viên (mật khẩu mặc định: 131109):");
+        if (password === "131109") { // Bạn có thể đổi mã PIN/mật khẩu ở đây
+          pageBody.classList.add("admin-active");
+          adminToggleBtn.style.background = "#16a34a";
+          alert("Đã bật chế độ Quản trị viên! Giờ đây bạn có thể bấm nút 'Xóa' trên các lời chúc.");
+        } else if (password !== null) {
+          alert("Mật khẩu không đúng!");
+        }
+      }
+    });
+
+    // Hàm xóa lời chúc từ Firebase theo ID của document
+    window.deleteWish = async function(docId) {
+      if (confirm("Bạn có chắc chắn muốn xóa lời chúc này không?")) {
+        try {
+          await db.collection("luubuot").doc(docId).delete();
+          alert("Đã xóa lời chúc thành công!");
+        } catch (error) {
+          console.error("Lỗi khi xóa:", error);
+          alert("Không thể xóa lời chúc. Vui lòng thử lại!");
+        }
+      }
+    };
 
     // Xử lý gửi RSVP / Lưu Bút Form lên Firebase
     const rsvpForm = document.getElementById("rsvp-form");
@@ -611,6 +664,7 @@
 
         snapshot.forEach((doc) => {
           const item = doc.data();
+          const docId = doc.id;
           
           let timeStr = "Vừa xong";
           if (item.createdAt && item.createdAt.toDate) {
@@ -620,6 +674,7 @@
 
           wishesHTML += `
             <div class="wish-item">
+              <button class="btn-delete" onclick="deleteWish('${docId}')">Xóa</button>
               <div class="wish-item-header">
                 <span class="wish-author">${escapeHtml(item.name)}</span>
                 <span class="wish-role">${escapeHtml(item.role || 'Khách')}</span>
@@ -643,4 +698,3 @@
   </script>
 </body>
 </html>
-```eof
