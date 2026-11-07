@@ -1,0 +1,1 @@
+Vui lòng đặt các hình ảnh kỷ yếu của lớp vào thư mục này.
