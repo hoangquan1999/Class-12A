@@ -4,23 +4,26 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0b1325" />
-  <meta name="description" content="Thiệp mời chụp ảnh kỷ yếu của tập thể lớp 12A — ngày 22 tháng 11 năm 2026." />
+  <meta name="description" content="Thiệp mời chụp ảnh kỷ yếu của tập thể lớp 12A — ngày 22 tháng 11 năm 2026 tại Trường THPT Nam Sách 2." />
   <title>12A — Một Ngày Để Nhớ | Sổ Lưu Bút Kỷ Yếu</title>
   
-  <!-- Favicon Logo cho tab trình duyệt -->
+  <!-- Favicon Logo tab trình duyệt -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
 
-  <!-- Fonts hỗ trợ Tiếng Việt chuẩn 100% -->
+  <!-- Google Fonts chuẩn tiếng Việt -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Caveat:wght@600;700&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Caveat:wght@600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
   
+  <!-- Thư viện Pháo hoa Confetti JS -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
   <style>
     :root {
       --ink: #e2e8f0;
       --muted: #94a3b8;
-      --paper: rgba(15, 23, 42, 0.82);
-      --paper-deep: rgba(30, 41, 59, 0.85);
+      --paper: rgba(15, 23, 42, 0.85);
+      --paper-deep: rgba(30, 41, 59, 0.88);
       --rust: #e11d48;
       --rust-dark: #be123c;
       --sage: #38bdf8;
@@ -29,7 +32,7 @@
       --white: #ffffff;
       --line: rgba(255, 255, 255, 0.12);
       
-      --serif: "Merriweather", Georgia, serif;
+      --serif: "DM Serif Display", Georgia, serif;
       --sans: "Be Vietnam Pro", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
       --script: "Caveat", cursive;
       
@@ -40,7 +43,6 @@
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; scroll-padding-top: 80px; }
     
-    /* Background Vũ trụ Trời đêm huyền ảo */
     body {
       margin: 0;
       color: var(--ink);
@@ -48,11 +50,10 @@
       line-height: 1.65;
       text-rendering: optimizeLegibility;
       -webkit-font-smoothing: antialiased;
-      
       background-image: 
         radial-gradient(circle at 50% 20%, rgba(56, 189, 248, 0.15), transparent 40%),
         radial-gradient(circle at 80% 80%, rgba(225, 29, 72, 0.15), transparent 40%),
-        linear-gradient(to bottom, rgba(11, 19, 43, 0.75), rgba(15, 23, 42, 0.9)),
+        linear-gradient(to bottom, rgba(11, 19, 43, 0.8), rgba(15, 23, 42, 0.95)),
         url('https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=1920&auto=format&fit=crop');
       background-size: cover;
       background-position: center;
@@ -83,7 +84,7 @@
       margin: 12px 0;
       font-family: var(--serif);
       font-size: clamp(2.1rem, 5vw, 3.5rem);
-      font-weight: 700;
+      font-weight: 400;
       line-height: 1.25;
       letter-spacing: -0.02em;
       color: var(--white);
@@ -109,13 +110,12 @@
     .btn-primary { color: var(--white); background: var(--rust); box-shadow: 0 10px 24px rgba(225, 29, 72, 0.35); }
     .btn-primary:hover:not(:disabled) { background: var(--rust-dark); }
     .btn-ghost { color: var(--white); border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); }
-    .btn-dark { color: var(--white); background: #1e293b; border: 1px solid var(--line); }
 
     /* Header */
     .site-header { position: absolute; z-index: 10; inset: 0 0 auto; color: var(--white); }
     .nav { min-height: 80px; display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid rgba(255,255,255,0.15); }
     .brand { display: flex; align-items: center; gap: 12px; font-size: 0.85rem; font-weight: 800; letter-spacing: 0.08em; }
-    .brand-mark { width: 36px; height: 36px; display: grid; place-items: center; border: 1.5px solid rgba(255,255,255,0.7); border-radius: 50%; font-family: var(--serif); font-weight: 700; color: var(--gold); }
+    .brand-mark { width: 36px; height: 36px; display: grid; place-items: center; border: 1.5px solid rgba(255,255,255,0.7); border-radius: 50%; font-family: var(--serif); color: var(--gold); }
     .nav-links { display: flex; align-items: center; gap: clamp(12px, 2.5vw, 28px); font-size: 0.85rem; color: rgba(255,255,255,0.85); font-weight: 500; }
     .nav-links a:hover { color: var(--gold); }
     .nav-cta { padding: 9px 18px; color: var(--night); background: var(--gold); border-radius: 999px; font-weight: 800; }
@@ -123,8 +123,8 @@
     /* Hero */
     .hero { min-height: 800px; position: relative; display: flex; align-items: center; overflow: hidden; color: var(--white); }
     .hero-inner { position: relative; z-index: 1; display: grid; grid-template-columns: 1.1fr 0.9fr; align-items: center; gap: 45px; padding: 100px 0 60px; }
-    .hero h1 { margin: 20px 0 16px; font-family: var(--serif); font-size: clamp(3.2rem, 7vw, 5.8rem); font-weight: 700; line-height: 1.15; }
-    .hero h1 em { color: var(--gold); font-family: var(--script); font-weight: 700; font-style: normal; font-size: 1.25em; display: inline-block; margin-left: 5px; }
+    .hero h1 { margin: 20px 0 16px; font-family: var(--serif); font-size: clamp(3.2rem, 7vw, 5.8rem); font-weight: 400; line-height: 1.15; }
+    .hero h1 em { color: var(--gold); font-family: var(--script); font-style: normal; font-size: 1.25em; display: inline-block; margin-left: 5px; }
     .hero-lead { max-width: 480px; color: rgba(255,255,255,0.85); font-size: 1.05rem; }
     .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
     
@@ -136,22 +136,22 @@
     .photo-stack { position: relative; width: min(100%, 390px); height: 440px; margin: 0 auto; }
     .photo-main { position: absolute; inset: 10px; padding: 14px; background: #0f172a; border: 1px solid var(--line); box-shadow: 0 30px 60px rgba(0,0,0,0.6); transform: rotate(-3deg); }
     .photo-main-inner { width: 100%; height: 100%; display: grid; place-items: center; text-align: center; padding: 24px; color: var(--white); background: linear-gradient(135deg, #1e293b, #0f172a); position: relative; overflow: hidden; border: 1px dashed rgba(255,255,255,0.15); }
-    .photo-main-inner h3 { font-family: var(--script); font-size: 4rem; margin: 0; color: var(--gold); font-weight: 700; }
+    .photo-main-inner h3 { font-family: var(--script); font-size: 4rem; margin: 0; color: var(--gold); }
     .photo-main-inner p { font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; margin-top: 8px; opacity: 0.8; }
     .tape { position: absolute; z-index: 2; width: 110px; height: 27px; top: -5px; left: 38%; background: rgba(251, 191, 36, 0.6); transform: rotate(-6deg); }
     .photo-caption { position: absolute; right: -10px; bottom: 10px; z-index: 3; padding: 12px 20px; color: var(--night); background: var(--gold); font-family: var(--script); font-size: 1.6rem; font-weight: 700; transform: rotate(-4deg); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
 
-    /* Story */
+    /* Story Section */
     .story { background: var(--paper); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); backdrop-filter: blur(16px); }
     .story-grid { display: grid; grid-template-columns: 0.8fr 1.2fr; align-items: start; gap: 60px; }
     .story-stamp { position: sticky; top: 110px; padding: 35px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper-deep); }
-    .story-stamp .big-12 { color: var(--gold); font-family: var(--serif); font-size: clamp(5rem, 10vw, 7.5rem); font-weight: 700; line-height: 0.9; }
+    .story-stamp .big-12 { color: var(--gold); font-family: var(--serif); font-size: clamp(5rem, 10vw, 7.5rem); line-height: 0.9; }
     .story-stamp p { margin: 15px 0 0; color: var(--muted); font-size: 0.95rem; }
     .letter p { margin: 0 0 18px; color: #cbd5e1; font-size: 1.02rem; }
-    .letter .salute { color: var(--white); font-family: var(--serif); font-size: 1.4rem; font-weight: 700; }
-    .signature { margin-top: 30px; color: var(--gold); font-family: var(--script); font-size: 2.4rem; font-weight: 700; line-height: 1.2; }
+    .letter .salute { color: var(--white); font-family: var(--serif); font-size: 1.4rem; }
+    .signature { margin-top: 30px; color: var(--gold); font-family: var(--script); font-size: 2.4rem; line-height: 1.2; }
 
-    /* --- GALLERY DẠNG CUỘN PHIM (FILMSTRIP ALBUM) --- */
+    /* Filmstrip Gallery */
     .gallery-section { background: var(--paper-deep); border-bottom: 1px solid var(--line); padding: 80px 0; backdrop-filter: blur(16px); }
     .filmstrip-container {
       position: relative;
@@ -162,7 +162,6 @@
       box-shadow: 0 25px 50px rgba(0,0,0,0.6);
       overflow: hidden;
     }
-    /* Dải lỗ phim phía trên & dưới */
     .filmstrip-holes {
       height: 18px;
       background-image: repeating-linear-gradient(90deg, #1e293b 0px, #1e293b 14px, transparent 14px, transparent 28px);
@@ -208,13 +207,12 @@
       font-size: 0.85rem;
       color: var(--muted);
       text-align: center;
-      font-family: var(--sans);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    /* Lightbox phóng to ảnh */
+    /* Lightbox Modal */
     .lightbox { position: fixed; z-index: 200; inset: 0; display: none; place-items: center; background: rgba(5, 11, 20, 0.92); backdrop-filter: blur(12px); padding: 20px; }
     .lightbox.show { display: grid; }
     .lightbox-content { max-width: 900px; width: 100%; text-align: center; position: relative; }
@@ -232,7 +230,7 @@
     
     .map-panel { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 20px; border-radius: var(--radius); background: #090d16; border: 1px solid var(--line); overflow: hidden; }
     .map-copy { padding: 35px; color: var(--white); align-self: center; }
-    .map-copy h3 { margin: 12px 0; color: var(--white); font-family: var(--serif); font-size: 2.2rem; font-weight: 700; line-height: 1.2; }
+    .map-copy h3 { margin: 12px 0; color: var(--white); font-family: var(--serif); font-size: 2.2rem; line-height: 1.2; }
     .map-copy p { margin: 0 0 24px; color: rgba(255,255,255,0.75); font-size: 0.95rem; }
     .map-frame { min-height: 320px; background: #0f172a; }
     .map-frame iframe { width: 100%; height: 100%; min-height: 320px; border: 0; display: block; filter: invert(90%) hue-rotate(180deg); }
@@ -252,7 +250,7 @@
     .rsvp { background: var(--paper-deep); border-bottom: 1px solid var(--line); backdrop-filter: blur(16px); }
     .rsvp-grid { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 50px; align-items: start; }
     .rsvp-aside { padding: 35px; color: var(--white); border-radius: var(--radius); background: linear-gradient(135deg, #0b132b, #1c2541); border: 1px solid var(--line); }
-    .rsvp-aside h3 { margin: 12px 0; font-family: var(--serif); font-size: 2.1rem; font-weight: 700; line-height: 1.2; }
+    .rsvp-aside h3 { margin: 12px 0; font-family: var(--serif); font-size: 2.1rem; line-height: 1.2; }
     .rsvp-aside p { color: rgba(255,255,255,0.75); font-size: 0.95rem; }
     .rsvp-form { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 32px; border-radius: var(--radius); background: rgba(15, 23, 42, 0.9); border: 1px solid var(--line); box-shadow: var(--shadow); }
     .field { display: flex; flex-direction: column; gap: 6px; }
@@ -381,16 +379,16 @@
     footer { padding: 35px 0; color: var(--muted); background: #050b14; text-align: center; font-size: 0.85rem; border-top: 1px solid var(--line); }
     footer strong { color: var(--gold); }
 
-    /* Modal / Hộp ký ức */
+    /* Modal Hộp Ký Ức */
     .memory-game { position: fixed; z-index: 100; inset: 0; display: none; place-items: center; padding: 20px; background: rgba(5, 11, 20, 0.85); backdrop-filter: blur(10px); }
     .memory-game.show { display: grid; }
     .memory-card { position: relative; width: min(460px, 100%); padding: 36px 28px; border-radius: 24px; color: var(--white); background: #0f172a; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 24px 80px rgba(0,0,0,0.8); text-align: center; }
     .memory-card .close { position: absolute; top: 15px; right: 18px; border: 0; color: var(--muted); background: none; font-size: 1.8rem; cursor: pointer; }
     .memory-card .close:hover { color: var(--white); }
-    .memory-card h3 { margin: 10px 0; font-family: var(--serif); font-size: 2rem; font-weight: 700; color: var(--gold); }
+    .memory-card h3 { margin: 10px 0; font-family: var(--serif); font-size: 2rem; color: var(--gold); }
     .memory-prompt { min-height: 100px; display: grid; place-items: center; margin: 24px 0; padding: 20px; border-radius: 16px; color: var(--white); background: rgba(30, 41, 59, 0.8); border: 1px dashed rgba(255,255,255,0.2); font-weight: 600; font-size: 1.1rem; line-height: 1.5; }
     
-    /* Cấu hình vị trí nổi bật cho Tiện ích phụ (Fix lỗi bị trôi xuống cuối) */
+    /* Floating Tools */
     .floating-tools { 
       position: fixed; 
       z-index: 9999; 
@@ -488,38 +486,25 @@
       </div>
     </section>
 
-    <!-- SECTION KHO ẢNH DẠNG CUỘN PHIM (FILMSTRIP ALBUM) -->
+    <!-- KHO ẢNH DẠNG CUỘN PHIM -->
     <section class="section gallery-section" id="gallery">
       <div class="wrap">
         <div class="section-head">
           <span class="eyebrow">Memories Roll</span>
           <h2>Thanh Xuân Qua<br />Cuộn Phim Kỷ Niệm</h2>
-          <p>Những khoảnh khắc đáng nhớ của tập thể 12A được ghi lại theo thời gian. Cuộn sang ngang để xem thêm!</p>
+          <p>Những khoảnh khắc đáng nhớ của tập thể 12A. Cuộn sang ngang để xem thêm!</p>
         </div>
 
         <div class="filmstrip-container">
           <div class="filmstrip-holes"></div>
           <div class="filmstrip-track" id="filmstrip-track">
-            <!-- Khung phim mẫu (Bạn có thể thêm/thay đường dẫn ảnh thật của lớp vào thuộc tính src) -->
-            <div class="film-frame" onclick="openLightbox('https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1200', 'Những nụ cười dưới mái trường')">
-              <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=600" alt="Kỷ niệm 12A" loading="lazy" />
-              <div class="film-caption">#1. Nụ cười 12A</div>
+            <div class="film-frame" onclick="openLightbox('assets/anh1.jpg', 'Những nụ cười dưới mái trường')">
+              <img src="assets/anh1.jpg" alt="Kỷ niệm 12A" loading="lazy" />
+              <div class="film-caption">#1. Tập thể 12A</div>
             </div>
-            <div class="film-frame" onclick="openLightbox('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=1200', 'Chuyến đi dã ngoại rực rỡ')">
-              <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=600" alt="Kỷ niệm 12A" loading="lazy" />
-              <div class="film-caption">#2. Hội bạn thân</div>
-            </div>
-            <div class="film-frame" onclick="openLightbox('https://images.unsplash.com/photo-1511632765486-a01980e01a18?q=80&w=1200', 'Góc lớp học thân quen')">
-              <img src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?q=80&w=600" alt="Kỷ niệm 12A" loading="lazy" />
-              <div class="film-caption">#3. Góc sân trường</div>
-            </div>
-            <div class="film-frame" onclick="openLightbox('https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=1200', 'Giờ ra chơi nhộn nhịp')">
-              <img src="https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=600" alt="Kỷ niệm 12A" loading="lazy" />
-              <div class="film-caption">#4. Giờ giải lao</div>
-            </div>
-            <div class="film-frame" onclick="openLightbox('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1200', 'Hội thao trường sôi nổi')">
-              <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=600" alt="Kỷ niệm 12A" loading="lazy" />
-              <div class="film-caption">#5. Ngày hội thao</div>
+            <div class="film-frame" onclick="openLightbox('assets/anh2.jpg', 'Khoảnh khắc sân trường')">
+              <img src="assets/anh2.jpg" alt="Kỷ niệm 12A" loading="lazy" />
+              <div class="film-caption">#2. Sân trường Nam Sách 2</div>
             </div>
           </div>
           <div class="filmstrip-holes"></div>
@@ -527,7 +512,7 @@
       </div>
     </section>
 
-    <!-- Lightbox Modal Xem Ảnh -->
+    <!-- Lightbox Modal -->
     <div class="lightbox" id="lightbox" onclick="closeLightbox()">
       <div class="lightbox-content" onclick="event.stopPropagation()">
         <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
@@ -601,9 +586,9 @@
           <p>Xác nhận tham dự để Ban tổ chức chuẩn bị chu đáo nhất cho ngày gặp mặt.</p>
         </div>
         <form class="rsvp-form" id="rsvp-form">
-          <div class="field"><label for="guest-name">Họ và tên *</label><input id="guest-name" name="name" required placeholder="Ví dụ: Nguyễn Văn A" /></div>
+          <div class="field"><label for="guest-name">Họ và tên *</label><input id="guest-name" name="name" required placeholder="Ví dụ: Nguyễn Văn A" maxlength="50" /></div>
           <div class="field"><label for="guest-role">Bạn là *</label><select id="guest-role" name="role" required><option value="">-- Chọn vai trò --</option><option>Thầy / Cô</option><option>Học sinh 12A</option><option>Khách mời</option></select></div>
-          <div class="field full"><label for="guest-message">Lời nhắn gửi & Cảm xúc *</label><textarea id="guest-message" name="message" rows="3" required placeholder="Viết vài dòng kỷ niệm hoặc lời chúc gửi tới tập thể 12A..."></textarea></div>
+          <div class="field full"><label for="guest-message">Lời nhắn gửi & Cảm xúc *</label><textarea id="guest-message" name="message" rows="3" required placeholder="Viết vài dòng kỷ niệm hoặc lời chúc gửi tới tập thể 12A..." maxlength="300"></textarea></div>
           <button class="btn btn-primary" id="rsvp-submit-btn" type="submit">Gửi xác nhận <span>↗</span></button>
         </form>
       </div>
@@ -641,18 +626,18 @@
     <div class="wrap">Made with ♡ by <strong>Class 12A</strong> · “Thanh xuân là chúng ta, vào những năm tháng ấy.”</div>
   </footer>
 
-  <!-- Nút Tiện ích Nổi trên màn hình (Floating Tools) -->
+  <!-- Floating Tools -->
   <div class="floating-tools">
     <button class="round-tool" id="music-toggle" title="Bật/Tắt nhạc">♫</button>
     <button class="round-tool" id="memory-open" title="Bốc thăm ký ức">✦</button>
-    <button class="round-tool admin-tool" id="admin-toggle" title="Chế độ quản trị viên (Xóa lời chúc)">
+    <button class="round-tool admin-tool" id="admin-toggle" title="Chế độ quản trị viên">
       <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
     </button>
   </div>
   
   <audio id="bg-music" loop preload="none"><source src="assets/thanh-xuan.mp3" type="audio/mpeg" /></audio>
 
-  <!-- Popup Hộp Ký Ức -->
+  <!-- Modal Hộp Ký Ức -->
   <div class="memory-game" id="memory-game" role="dialog" aria-modal="true">
     <div class="memory-card">
       <button class="close" id="memory-close" aria-label="Đóng Popup">&times;</button>
@@ -682,19 +667,18 @@
     musicBtn.addEventListener("click", async () => {
       if (music.paused) {
         try { await music.play(); musicBtn.textContent = "Ⅱ"; }
-        catch { alert("Thêm file nhạc assets/thanh-xuan.mp3 vào thư mục dự án để nghe nhạc nhé!"); }
+        catch { alert("Hãy đảm bảo file nhạc assets/thanh-xuan.mp3 tồn tại trong dự án nhé!"); }
       } else { music.pause(); musicBtn.textContent = "♫"; }
     });
 
     // 3. Hộp Ký Ức (Memory Minigame)
     const memoryPrompts = [
       "Kể tên một lần cả lớp 12A cười không thể dừng lại trong giờ học?",
-      "Ai là người thường xuyên đi học sớm nhất (hoặc muộn nhất) lớp mình?",
+      "Ai là người thường xuyên đi học sớm nhất lớp mình?",
       "Nhắc lại một câu nói 'thương hiệu' của Thầy/Cô chủ nhiệm khiến bạn nhớ mãi?",
-      "Kỷ niệm vui nhất trong chuyến đi dã ngoại/hoạt động trường của 12A là gì?",
+      "Kỷ niệm vui nhất trong chuyến đi dã ngoại hoặc hoạt động trường là gì?",
       "Bài hát nào mỗi khi vang lên khiến bạn nghĩ ngay tới tập thể 12A?",
-      "Món ăn vặt cổng trường nào gắn liền với những giờ ra chơi của lớp mình?",
-      "Một lời nhắn bí mật mà bạn muốn gửi tới một thành viên trong lớp 12A?"
+      "Món ăn vặt cổng trường nào gắn liền với những giờ ra chơi?"
     ];
 
     const gameModal = document.getElementById("memory-game");
@@ -712,36 +696,28 @@
       gameModal.classList.add("show");
     });
 
-    closeGameBtn.addEventListener("click", () => {
-      gameModal.classList.remove("show");
-    });
-
-    gameModal.addEventListener("click", (e) => {
-      if (e.target === gameModal) {
-        gameModal.classList.remove("show");
-      }
-    });
+    closeGameBtn.addEventListener("click", () => gameModal.classList.remove("show"));
+    gameModal.addEventListener("click", (e) => { if (e.target === gameModal) gameModal.classList.remove("show"); });
 
     drawBtn.addEventListener("click", () => {
-      promptDisplay.style.opacity = "0.5";
+      promptDisplay.style.opacity = "0.4";
       setTimeout(() => {
         promptDisplay.textContent = getRandomPrompt();
         promptDisplay.style.opacity = "1";
       }, 150);
     });
 
-    // 4. Xử lý Lightbox Xem Ảnh Phóng To
+    // 4. Lightbox Phóng To Ảnh
     function openLightbox(imgSrc, captionText) {
       document.getElementById("lightbox-img").src = imgSrc;
       document.getElementById("lightbox-caption").textContent = captionText;
       document.getElementById("lightbox").classList.add("show");
     }
-
     function closeLightbox() {
       document.getElementById("lightbox").classList.remove("show");
     }
 
-    // 5. Firebase Configuration & Firestore Init
+    // 5. Firebase Configuration & Firestore
     const firebaseConfig = {
       apiKey: "AIzaSyAx96ixM3qX9us76R9kkhFkJslLmX2JSxs",
       authDomain: "class12a-d4eb3.firebaseapp.com",
@@ -755,12 +731,13 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    // Bảo mật chống XSS: Lọc ký tự đặc biệt đầu vào
     function escapeHtml(str) {
       if (!str) return '';
       return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]));
     }
 
-    // 6. Admin Authentication Management
+    // 6. Admin Authentication (SessionStorage)
     const adminToggleBtn = document.getElementById("admin-toggle");
     const pageBody = document.getElementById("page-body");
     
@@ -776,12 +753,12 @@
         adminToggleBtn.style.boxShadow = "0 8px 24px rgba(0,0,0,0.6)";
         alert("Đã thoát chế độ Quản trị viên.");
       } else {
-        const password = prompt("Nhập mật khẩu quản trị viên (mật khẩu: 123456):");
+        const password = prompt("Nhập mật khẩu quản trị viên:");
         if (password === "123456") {
           pageBody.classList.add("admin-active");
           sessionStorage.setItem("isAdminLoggedIn", "true");
           adminToggleBtn.style.boxShadow = "0 0 0 3px #16a34a";
-          alert("Đã bật chế độ Quản trị viên! Nút 'Xóa' đã sẵn sàng trên từng lời chúc.");
+          alert("Đã bật chế độ Quản trị viên! Nút 'Xóa' đã sẵn sàng.");
         } else if (password !== null) {
           alert("Mật khẩu không chính xác!");
         }
@@ -789,7 +766,7 @@
     });
 
     window.deleteWish = async function(docId) {
-      if (confirm("Bạn có chắc chắn muốn xóa lời chúc này không? Hành động không thể hoàn tác.")) {
+      if (confirm("Bạn có chắc chắn muốn xóa lời chúc này không?")) {
         try {
           await db.collection("luubuot").doc(docId).delete();
           alert("Đã xóa lời chúc thành công!");
@@ -800,7 +777,7 @@
       }
     };
 
-    // 7. Xử lý Form RSVP
+    // 7. RSVP Form Handler (Tích hợp hiệu ứng Pháo hoa & chống Spam)
     const rsvpForm = document.getElementById("rsvp-form");
     const submitBtn = document.getElementById("rsvp-submit-btn");
 
@@ -825,6 +802,13 @@
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
 
+          // 🎉 KÍCH HOẠT HIỆU ỨNG PHÁO HOA KHI THÀNH CÔNG 🎉
+          confetti({
+            particleCount: 120,
+            spread: 80,
+            origin: { y: 0.6 }
+          });
+
           alert("Cảm ơn bạn! Lời chúc đã được gửi thành công vào Sổ Lưu Bút 12A.");
           rsvpForm.reset();
           document.getElementById("guestbook").scrollIntoView({ behavior: "smooth" });
@@ -838,7 +822,7 @@
       });
     }
 
-    // 8. Realtime Firestore Listener
+    // 8. Realtime Firestore Listener (Giới hạn 50 mục, render an toàn chống XSS)
     db.collection("luubuot")
       .orderBy("createdAt", "desc")
       .limit(50)
