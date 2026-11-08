@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0b1325" />
   <meta name="description" content="Thiệp mời chụp ảnh kỷ yếu của tập thể lớp 12A — ngày 22 tháng 11 năm 2026 tại Trường THPT Nam Sách 2." />
-  <title>12A — Một Ngày Để Nhớ | Sổ Lưu Bút Kỷ Yếu</title>
+  <title>12A — Một Ngày Để Nhớ | Kỷ Yếu Tập Thể Lớp</title>
   
   <!-- Favicon Logo tab trình duyệt -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
@@ -777,7 +777,7 @@
       }
     };
 
-    // 7. RSVP Form Handler (Tích hợp hiệu ứng Pháo hoa & chống Spam)
+    // 7. RSVP Form Handler (Tích hợp hiệu ứng Pháo hoa & chống Spam, tách biệt collection)
     const rsvpForm = document.getElementById("rsvp-form");
     const submitBtn = document.getElementById("rsvp-submit-btn");
 
@@ -795,12 +795,20 @@
         submitBtn.innerHTML = "Đang gửi... 🚀";
 
         try {
-          await db.collection("luubuot").add({
-            name: name,
-            role: role,
-            message: message,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-          });
+          // Ghi đồng thời vào 2 collection độc lập: luubuot & rsvps để phân tách chuẩn xác thống kê
+          await Promise.all([
+            db.collection("luubuot").add({
+              name: name,
+              role: role,
+              message: message,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }),
+            db.collection("rsvps").add({
+              name: name,
+              role: role,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            })
+          ]);
 
           // 🎉 KÍCH HOẠT HIỆU ỨNG PHÁO HOA KHI THÀNH CÔNG 🎉
           confetti({
@@ -809,7 +817,7 @@
             origin: { y: 0.6 }
           });
 
-          alert("Cảm ơn bạn! Lời chúc đã được gửi thành công vào Sổ Lưu Bút 12A.");
+          alert("Cảm ơn bạn! Xác nhận tham dự & lời chúc đã được gửi thành công.");
           rsvpForm.reset();
           document.getElementById("guestbook").scrollIntoView({ behavior: "smooth" });
         } catch (error) {
@@ -822,31 +830,24 @@
       });
     }
 
-    // 8. Realtime Firestore Listener (Giới hạn 50 mục, render an toàn chống XSS)
+    // 8. Realtime Firestore Listener (Lắng nghe độc lập luubuot & rsvps)
     db.collection("luubuot")
       .orderBy("createdAt", "desc")
       .limit(50)
       .onSnapshot((snapshot) => {
         const wishesContainer = document.getElementById("wishes-container");
-        const attendeesContainer = document.getElementById("attendees-container");
         const wishCount = document.getElementById("wish-count");
-        const attendeeCount = document.getElementById("attendee-count");
 
-        if (!wishesContainer || !attendeesContainer) return;
+        if (!wishesContainer) return;
 
         if (snapshot.empty) {
           wishCount.textContent = "0 lời chúc";
-          attendeeCount.textContent = "0 người";
           wishesContainer.innerHTML = '<p style="color: var(--muted); font-style: italic;">Chưa có lời chúc nào. Hãy là người đầu tiên gửi nhé!</p>';
-          attendeesContainer.innerHTML = '<p style="color: var(--muted);">Chưa có người đăng ký.</p>';
           return;
         }
 
         wishCount.textContent = `${snapshot.size} lời chúc`;
-        attendeeCount.textContent = `${snapshot.size} người`;
-
         let wishesHTML = "";
-        let attendeesHTML = "";
 
         snapshot.forEach((doc) => {
           const item = doc.data();
@@ -869,7 +870,30 @@
               <span class="wish-time">${timeStr}</span>
             </div>
           `;
+        });
+        wishesContainer.innerHTML = wishesHTML;
+      });
 
+    db.collection("rsvps")
+      .orderBy("createdAt", "desc")
+      .limit(50)
+      .onSnapshot((snapshot) => {
+        const attendeesContainer = document.getElementById("attendees-container");
+        const attendeeCount = document.getElementById("attendee-count");
+
+        if (!attendeesContainer) return;
+
+        if (snapshot.empty) {
+          attendeeCount.textContent = "0 người";
+          attendeesContainer.innerHTML = '<p style="color: var(--muted);">Chưa có người đăng ký.</p>';
+          return;
+        }
+
+        attendeeCount.textContent = `${snapshot.size} người`;
+        let attendeesHTML = "";
+
+        snapshot.forEach((doc) => {
+          const item = doc.data();
           attendeesHTML += `
             <div class="attendee-item">
               <span class="attendee-name">✓ ${escapeHtml(item.name)}</span>
@@ -877,11 +901,7 @@
             </div>
           `;
         });
-
-        wishesContainer.innerHTML = wishesHTML;
         attendeesContainer.innerHTML = attendeesHTML;
-      }, (error) => {
-        console.error("Lỗi Firestore listener: ", error);
       });
   </script>
 </body>
