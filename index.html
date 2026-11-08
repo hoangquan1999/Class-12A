@@ -405,7 +405,33 @@
     .time-box strong { color:var(--gold); }
     .wish-item { border-color:rgba(52,72,61,.1); }
     .wish-role { background:#e7ede4; color:var(--sage-dark); }
-    .admin-tool { display:none !important; }
+    .admin-tool { display:grid; }
+
+    /* Secure admin console */
+    .admin-modal { position:fixed; z-index:200; inset:0; display:none; place-items:center; padding:16px; background:rgba(12,22,18,.78); backdrop-filter:blur(8px); }
+    .admin-modal.show { display:grid; }
+    .admin-panel { width:min(920px,100%); max-height:min(88svh,900px); overflow:auto; padding:clamp(20px,4vw,34px); border:1px solid rgba(212,183,122,.55); border-radius:22px; background:var(--paper); box-shadow:0 30px 90px rgba(0,0,0,.35); }
+    .admin-head { display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:20px; }
+    .admin-head h2 { margin:0; font:700 clamp(1.5rem,4vw,2.1rem) var(--serif); }
+    .admin-close { width:40px; height:40px; border:0; border-radius:50%; color:var(--ink); background:var(--paper-deep); font-size:1.5rem; cursor:pointer; }
+    .admin-login { max-width:440px; margin:12px auto; padding:24px; border:1px solid var(--line); border-radius:16px; background:#fff; }
+    .admin-login h3 { margin-top:0; font-family:var(--serif); }
+    .admin-login input { width:100%; padding:13px 14px; border:1px solid #d4d0c6; border-radius:10px; background:#faf8f5; }
+    .admin-toolbar { display:flex; flex-wrap:wrap; gap:10px; margin:16px 0; }
+    .admin-toolbar button,.admin-record button { border:0; border-radius:999px; padding:9px 14px; cursor:pointer; font-weight:700; }
+    .admin-toolbar button { color:#fff; background:var(--sage-dark); }
+    .admin-toolbar button.secondary { color:var(--ink); background:var(--paper-deep); }
+    .admin-records { display:grid; gap:12px; }
+    .admin-record { padding:16px; border:1px solid var(--line); border-radius:14px; background:#fff; overflow-wrap:anywhere; }
+    .admin-record strong { display:block; margin-bottom:5px; }
+    .admin-record p { margin:6px 0; color:var(--muted); white-space:pre-wrap; }
+    .admin-record small { color:#7d8980; }
+    .admin-record-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    .admin-record button.edit { color:#fff; background:var(--sage-dark); }
+    .admin-record button.delete { color:#9d2727; background:#fee2e2; }
+    .admin-error { min-height:1.4em; color:#a12e2e; font-size:.88rem; }
+    .admin-empty { padding:22px; color:var(--muted); text-align:center; border:1px dashed var(--line); border-radius:12px; }
+
     .mobile-menu-toggle {
       display:none; width:44px; height:44px; border:1px solid rgba(255,255,255,.35);
       border-radius:50%; color:#fff; background:rgba(255,255,255,.08); cursor:pointer;
@@ -652,7 +678,7 @@
   <div class="floating-tools">
     <button class="round-tool" id="music-toggle" title="Bật/Tắt nhạc">♫</button>
     <button class="round-tool" id="memory-open" title="Bốc thăm ký ức">✦</button>
-    <!-- Chức năng quản trị được tạm ẩn cho tới khi cấu hình Firebase Authentication và Security Rules. -->
+    <button class="round-tool admin-tool" id="admin-open" title="Quản trị" aria-label="Mở quản trị">⚙</button>
   </div>
   
   <audio id="bg-music" loop preload="none"><source src="assets/thanh-xuan.mp3" type="audio/mpeg" /></audio>
@@ -665,6 +691,35 @@
       <div class="memory-prompt" id="memory-prompt">Bạn đã sẵn sàng gọi tên một kỷ niệm chưa?</div>
       <button class="btn btn-dark" id="memory-draw">Bốc một kỷ niệm ✨</button>
     </div>
+  </div>
+
+ 
+  <div class="admin-modal" id="admin-modal" role="dialog" aria-modal="true" aria-labelledby="admin-title" aria-hidden="true">
+    <section class="admin-panel">
+      <div class="admin-head">
+        <h2 id="admin-title">Quản trị 12A</h2>
+        <button class="admin-close" id="admin-close" type="button" aria-label="Đóng">×</button>
+      </div>
+      <form class="admin-login" id="admin-login-form">
+        <h3>Đăng nhập quản trị</h3>
+        <p>Nhập mật khẩu Admin để quản lý sổ lưu bút và danh sách tham dự.</p>
+        <input id="admin-password" type="password" autocomplete="current-password" required placeholder="Mật khẩu quản trị" />
+        <p class="admin-error" id="admin-login-error" aria-live="polite"></p>
+        <button class="btn btn-primary" type="submit">Đăng nhập</button>
+      </form>
+      <div id="admin-dashboard" hidden>
+        <div class="admin-toolbar">
+          <button type="button" data-admin-tab="luubuot">Sổ lưu bút</button>
+          <button type="button" data-admin-tab="rsvps">Danh sách RSVP</button>
+          <button type="button" id="admin-add">＋ Thêm bản ghi</button>
+          <button type="button" class="secondary" id="admin-export">Xuất CSV</button>
+          <button type="button" class="secondary" id="admin-refresh">Làm mới</button>
+          <button type="button" class="secondary" id="admin-logout">Đăng xuất</button>
+        </div>
+        <p id="admin-status" aria-live="polite"></p>
+        <div class="admin-records" id="admin-records"><div class="admin-empty">Đang tải dữ liệu…</div></div>
+      </div>
+    </section>
   </div>
 
   <script>
@@ -856,6 +911,119 @@
       console.error("Không thể tải danh sách tham dự:", error);
       document.getElementById("attendees-container").textContent = "Chưa thể tải danh sách. Vui lòng thử lại sau.";
     });
+
+    // Secure Admin Console: password verification and data mutations happen on the server.
+    (() => {
+      const modal = document.getElementById("admin-modal");
+      const loginForm = document.getElementById("admin-login-form");
+      const loginView = loginForm;
+      const dashboard = document.getElementById("admin-dashboard");
+      const recordsEl = document.getElementById("admin-records");
+      const statusEl = document.getElementById("admin-status");
+      let activeCollection = "luubuot";
+      let records = [];
+
+      async function api(action, method = "GET", payload = null) {
+        const response = await fetch("/api/admin?action=" + encodeURIComponent(action), {
+          method,
+          credentials: "same-origin",
+          headers: payload ? { "Content-Type": "application/json" } : {},
+          body: payload ? JSON.stringify(payload) : undefined
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || "Yêu cầu không thành công.");
+        return data;
+      }
+      function openModal() {
+        modal.classList.add("show");
+        modal.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+        api("me").then(() => showDashboard()).catch(() => {
+          loginView.hidden = false; dashboard.hidden = true;
+          document.getElementById("admin-password").focus();
+        });
+      }
+      function closeModal() {
+        modal.classList.remove("show");
+        modal.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+      }
+      function showDashboard() { loginView.hidden = true; dashboard.hidden = false; loadRecords(); }
+      async function loadRecords() {
+        recordsEl.innerHTML = '<div class="admin-empty">Đang tải dữ liệu…</div>';
+        try {
+          const data = await api("data");
+          records = data[activeCollection] || [];
+          statusEl.textContent = activeCollection === "luubuot" ? "Sổ lưu bút · " + records.length + " bản ghi" : "RSVP · " + records.length + " bản ghi";
+          if (!records.length) { recordsEl.innerHTML = '<div class="admin-empty">Chưa có dữ liệu.</div>'; return; }
+          recordsEl.innerHTML = records.map(item => {
+            const details = activeCollection === "luubuot" ? item.message : "Xác nhận tham dự";
+            return '<article class="admin-record"><strong>' + escapeHtml(item.name || "Chưa có tên") + ' · ' + escapeHtml(item.role || "Khách") + '</strong><p>' + escapeHtml(details || "") + '</p><small>' + escapeHtml(item.createdAt || "") + ' · ID: ' + escapeHtml(item.id) + '</small><div class="admin-record-actions"><button class="edit" data-edit="' + escapeHtml(item.id) + '">Sửa</button><button class="delete" data-delete="' + escapeHtml(item.id) + '">Xóa</button></div></article>';
+          }).join("");
+        } catch (error) { recordsEl.innerHTML = '<div class="admin-empty">' + escapeHtml(error.message) + '</div>'; }
+      }
+      document.getElementById("admin-open").addEventListener("click", openModal);
+      document.getElementById("admin-close").addEventListener("click", closeModal);
+      modal.addEventListener("click", event => { if (event.target === modal) closeModal(); });
+      document.addEventListener("keydown", event => { if (event.key === "Escape" && modal.classList.contains("show")) closeModal(); });
+      loginForm.addEventListener("submit", async event => {
+        event.preventDefault();
+        const passwordInput = document.getElementById("admin-password");
+        const errorEl = document.getElementById("admin-login-error");
+        errorEl.textContent = "";
+        try {
+          await api("login", "POST", { password: passwordInput.value });
+          passwordInput.value = "";
+          showDashboard();
+        } catch (error) { errorEl.textContent = error.message; }
+      });
+      document.querySelectorAll("[data-admin-tab]").forEach(button => button.addEventListener("click", () => {
+        activeCollection = button.dataset.adminTab; loadRecords();
+      }));
+      document.getElementById("admin-refresh").addEventListener("click", loadRecords);
+      document.getElementById("admin-logout").addEventListener("click", async () => {
+        try { await api("logout", "POST", {}); } catch (_) {}
+        dashboard.hidden = true; loginView.hidden = false;
+        document.getElementById("admin-password").value = "";
+      });
+      document.getElementById("admin-add").addEventListener("click", async () => {
+        const name = prompt("Họ và tên:");
+        if (name === null || !name.trim()) return;
+        const role = prompt("Vai trò (ví dụ: Học sinh 12A, Thầy / Cô):", "Học sinh 12A");
+        if (role === null) return;
+        const message = activeCollection === "luubuot" ? prompt("Nội dung lời chúc:") : "";
+        if (activeCollection === "luubuot" && message === null) return;
+        try { await api("create", "POST", { collection: activeCollection, name, role, message }); await loadRecords(); }
+        catch (error) { alert(error.message); }
+      });
+      recordsEl.addEventListener("click", async event => {
+        const editId = event.target.dataset.edit;
+        const deleteId = event.target.dataset.delete;
+        if (editId) {
+          const item = records.find(record => record.id === editId);
+          if (!item) return;
+          const name = prompt("Họ và tên:", item.name || "");
+          if (name === null) return;
+          const role = prompt("Vai trò:", item.role || "");
+          if (role === null) return;
+          const message = activeCollection === "luubuot" ? prompt("Lời chúc:", item.message || "") : undefined;
+          if (activeCollection === "luubuot" && message === null) return;
+          try { await api("update", "POST", { collection: activeCollection, id: editId, name, role, message }); await loadRecords(); }
+          catch (error) { alert(error.message); }
+        }
+        if (deleteId && confirm("Bạn chắc chắn muốn xóa bản ghi này? Thao tác không thể hoàn tác.")) {
+          try { await api("delete", "POST", { collection: activeCollection, id: deleteId }); await loadRecords(); }
+          catch (error) { alert(error.message); }
+        }
+      });
+      document.getElementById("admin-export").addEventListener("click", () => {
+        const columns = activeCollection === "luubuot" ? ["id","name","role","message","createdAt"] : ["id","name","role","createdAt"];
+        const csv = [columns.join(","), ...records.map(item => columns.map(key => '"' + String(item[key] ?? "").replace(/"/g,'""') + '"').join(","))].join("\r\n");
+        const url = URL.createObjectURL(new Blob(["\uFEFF" + csv], {type:"text/csv;charset=utf-8"}));
+        const link = document.createElement("a"); link.href = url; link.download = activeCollection + "-12A.csv"; link.click(); URL.revokeObjectURL(url);
+      });
+    })();
+
   </script>
 </body>
 </html>
