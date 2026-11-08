@@ -22,8 +22,8 @@
     :root {
       --ink: #e2e8f0;
       --muted: #94a3b8;
-      --paper: rgba(15, 23, 42, 0.85);
-      --paper-deep: rgba(30, 41, 59, 0.88);
+      --paper: rgba(15, 23, 42, 0.88);
+      --paper-deep: rgba(30, 41, 59, 0.92);
       --rust: #e11d48;
       --rust-dark: #be123c;
       --sage: #38bdf8;
@@ -50,15 +50,15 @@
       line-height: 1.65;
       text-rendering: optimizeLegibility;
       -webkit-font-smoothing: antialiased;
+      background-color: var(--night);
       background-image: 
         radial-gradient(circle at 50% 20%, rgba(56, 189, 248, 0.15), transparent 40%),
         radial-gradient(circle at 80% 80%, rgba(225, 29, 72, 0.15), transparent 40%),
-        linear-gradient(to bottom, rgba(11, 19, 43, 0.8), rgba(15, 23, 42, 0.95)),
+        linear-gradient(to bottom, rgba(11, 19, 43, 0.85), rgba(15, 23, 42, 0.96)),
         url('https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=1920&auto=format&fit=crop');
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
-      backdrop-filter: blur(3px);
     }
 
     a { color: inherit; text-decoration: none; }
@@ -129,7 +129,7 @@
     .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
     
     .countdown { display: flex; gap: 12px; margin-top: 35px; max-width: 440px; }
-    .time-box { flex: 1; padding: 14px 8px; text-align: center; border: 1px solid rgba(255,255,255,0.2); border-radius: 14px; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(12px); }
+    .time-box { flex: 1; padding: 14px 8px; text-align: center; border: 1px solid rgba(255,255,255,0.2); border-radius: 14px; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(12px); }
     .time-box strong { display: block; color: var(--gold); font-family: var(--serif); font-size: 2.1rem; line-height: 1.1; }
     .time-box span { color: rgba(255,255,255,0.65); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; }
 
@@ -380,7 +380,7 @@
     footer strong { color: var(--gold); }
 
     /* Modal Hộp Ký Ức */
-    .memory-game { position: fixed; z-index: 100; inset: 0; display: none; place-items: center; padding: 20px; background: rgba(5, 11, 20, 0.85); backdrop-filter: blur(10px); }
+    .memory-game { position: fixed; z-index: 99999; inset: 0; display: none; place-items: center; padding: 20px; background: rgba(5, 11, 20, 0.85); backdrop-filter: blur(10px); }
     .memory-game.show { display: grid; }
     .memory-card { position: relative; width: min(460px, 100%); padding: 36px 28px; border-radius: 24px; color: var(--white); background: #0f172a; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 24px 80px rgba(0,0,0,0.8); text-align: center; }
     .memory-card .close { position: absolute; top: 15px; right: 18px; border: 0; color: var(--muted); background: none; font-size: 1.8rem; cursor: pointer; }
@@ -388,15 +388,15 @@
     .memory-card h3 { margin: 10px 0; font-family: var(--serif); font-size: 2rem; color: var(--gold); }
     .memory-prompt { min-height: 100px; display: grid; place-items: center; margin: 24px 0; padding: 20px; border-radius: 16px; color: var(--white); background: rgba(30, 41, 59, 0.8); border: 1px dashed rgba(255,255,255,0.2); font-weight: 600; font-size: 1.1rem; line-height: 1.5; }
     
-    /* Floating Tools */
+    /* Floating Tools - Cố định chuẩn xác màn hình, không bị trôi */
     .floating-tools { 
-      position: fixed; 
-      z-index: 9999; 
-      right: 20px; 
-      bottom: 20px; 
-      display: flex; 
-      flex-direction: column; 
-      gap: 10px; 
+      position: fixed !important; 
+      z-index: 99999 !important; 
+      right: 20px !important; 
+      bottom: 20px !important; 
+      display: flex !important; 
+      flex-direction: column !important; 
+      gap: 10px !important; 
     }
     .round-tool { width: 48px; height: 48px; display: grid; place-items: center; border: 1px solid rgba(255,255,255,0.25); border-radius: 50%; color: var(--white); background: #0f172a; box-shadow: 0 8px 24px rgba(0,0,0,0.6); cursor: pointer; font-size: 1.1rem; transition: transform 0.2s, background 0.2s; }
     .round-tool:hover { transform: scale(1.08); background: #1e293b; }
@@ -626,7 +626,7 @@
     <div class="wrap">Made with ♡ by <strong>Class 12A</strong> · “Thanh xuân là chúng ta, vào những năm tháng ấy.”</div>
   </footer>
 
-  <!-- Floating Tools -->
+  <!-- Floating Tools (Cố định góc dưới bên phải màn hình) -->
   <div class="floating-tools">
     <button class="round-tool" id="music-toggle" title="Bật/Tắt nhạc">♫</button>
     <button class="round-tool" id="memory-open" title="Bốc thăm ký ức">✦</button>
@@ -691,21 +691,32 @@
       return memoryPrompts[Math.floor(Math.random() * memoryPrompts.length)];
     }
 
-    openGameBtn.addEventListener("click", () => {
-      promptDisplay.textContent = getRandomPrompt();
-      gameModal.classList.add("show");
-    });
-
-    closeGameBtn.addEventListener("click", () => gameModal.classList.remove("show"));
-    gameModal.addEventListener("click", (e) => { if (e.target === gameModal) gameModal.classList.remove("show"); });
-
-    drawBtn.addEventListener("click", () => {
-      promptDisplay.style.opacity = "0.4";
-      setTimeout(() => {
+    if (openGameBtn && gameModal) {
+      openGameBtn.addEventListener("click", () => {
         promptDisplay.textContent = getRandomPrompt();
-        promptDisplay.style.opacity = "1";
-      }, 150);
-    });
+        gameModal.classList.add("show");
+      });
+    }
+
+    if (closeGameBtn && gameModal) {
+      closeGameBtn.addEventListener("click", () => gameModal.classList.remove("show"));
+    }
+
+    if (gameModal) {
+      gameModal.addEventListener("click", (e) => { 
+        if (e.target === gameModal) gameModal.classList.remove("show"); 
+      });
+    }
+
+    if (drawBtn && promptDisplay) {
+      drawBtn.addEventListener("click", () => {
+        promptDisplay.style.opacity = "0.4";
+        setTimeout(() => {
+          promptDisplay.textContent = getRandomPrompt();
+          promptDisplay.style.opacity = "1";
+        }, 150);
+      });
+    }
 
     // 4. Lightbox Phóng To Ảnh
     function openLightbox(imgSrc, captionText) {
@@ -728,7 +739,9 @@
       measurementId: "G-BE57V2J4E9"
     };
 
-    firebase.initializeApp(firebaseConfig);
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
     const db = firebase.firestore();
 
     // Bảo mật chống XSS: Lọc ký tự đặc biệt đầu vào
@@ -743,41 +756,43 @@
     
     if (sessionStorage.getItem("isAdminLoggedIn") === "true") {
       pageBody.classList.add("admin-active");
-      adminToggleBtn.style.boxShadow = "0 0 0 3px #16a34a";
+      if (adminToggleBtn) adminToggleBtn.style.boxShadow = "0 0 0 3px #16a34a";
     }
     
-    adminToggleBtn.addEventListener("click", () => {
-      if (pageBody.classList.contains("admin-active")) {
-        pageBody.classList.remove("admin-active");
-        sessionStorage.removeItem("isAdminLoggedIn");
-        adminToggleBtn.style.boxShadow = "0 8px 24px rgba(0,0,0,0.6)";
-        alert("Đã thoát chế độ Quản trị viên.");
-      } else {
-        const password = prompt("Nhập mật khẩu quản trị viên:");
-        if (password === "123456") {
-          pageBody.classList.add("admin-active");
-          sessionStorage.setItem("isAdminLoggedIn", "true");
-          adminToggleBtn.style.boxShadow = "0 0 0 3px #16a34a";
-          alert("Đã bật chế độ Quản trị viên! Nút 'Xóa' đã sẵn sàng.");
-        } else if (password !== null) {
-          alert("Mật khẩu không chính xác!");
+    if (adminToggleBtn) {
+      adminToggleBtn.addEventListener("click", () => {
+        if (pageBody.classList.contains("admin-active")) {
+          pageBody.classList.remove("admin-active");
+          sessionStorage.removeItem("isAdminLoggedIn");
+          adminToggleBtn.style.boxShadow = "0 8px 24px rgba(0,0,0,0.6)";
+          alert("Đã thoát chế độ Quản trị viên.");
+        } else {
+          const password = prompt("Nhập mật khẩu quản trị viên:");
+          if (password === "123456") {
+            pageBody.classList.add("admin-active");
+            sessionStorage.setItem("isAdminLoggedIn", "true");
+            adminToggleBtn.style.boxShadow = "0 0 0 3px #16a34a";
+            alert("Đã bật chế độ Quản trị viên! Nút 'Xóa' đã sẵn sàng.");
+          } else if (password !== null) {
+            alert("Mật khẩu không chính xác!");
+          }
         }
-      }
-    });
+      });
+    }
 
     window.deleteWish = async function(docId) {
-      if (confirm("Bạn có chắc chắn muốn xóa lời chúc này không?")) {
+      if (confirm("Bạn có chắc chắn muốn xóa mục này không?")) {
         try {
           await db.collection("luubuot").doc(docId).delete();
-          alert("Đã xóa lời chúc thành công!");
+          alert("Đã xóa thành công!");
         } catch (error) {
           console.error("Lỗi khi xóa:", error);
-          alert("Không thể xóa lời chúc. Vui lòng kiểm tra lại mạng!");
+          alert("Không thể xóa. Vui lòng kiểm tra lại cấu hình Firebase Rules!");
         }
       }
     };
 
-    // 7. RSVP Form Handler (Tích hợp hiệu ứng Pháo hoa & chống Spam, tách biệt collection)
+    // 7. RSVP Form Handler (Ghi an toàn vào collection luubuot)
     const rsvpForm = document.getElementById("rsvp-form");
     const submitBtn = document.getElementById("rsvp-submit-btn");
 
@@ -795,20 +810,12 @@
         submitBtn.innerHTML = "Đang gửi... 🚀";
 
         try {
-          // Ghi đồng thời vào 2 collection độc lập: luubuot & rsvps để phân tách chuẩn xác thống kê
-          await Promise.all([
-            db.collection("luubuot").add({
-              name: name,
-              role: role,
-              message: message,
-              createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            }),
-            db.collection("rsvps").add({
-              name: name,
-              role: role,
-              createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            })
-          ]);
+          await db.collection("luubuot").add({
+            name: name,
+            role: role,
+            message: message,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
 
           // 🎉 KÍCH HOẠT HIỆU ỨNG PHÁO HOA KHI THÀNH CÔNG 🎉
           confetti({
@@ -817,12 +824,12 @@
             origin: { y: 0.6 }
           });
 
-          alert("Cảm ơn bạn! Xác nhận tham dự & lời chúc đã được gửi thành công.");
+          alert("Cảm ơn bạn! Lời chúc và xác nhận tham dự đã được gửi thành công.");
           rsvpForm.reset();
           document.getElementById("guestbook").scrollIntoView({ behavior: "smooth" });
         } catch (error) {
           console.error("Lỗi gửi dữ liệu Firebase:", error);
-          alert("Có lỗi kết nối xảy ra khi gửi. Vui lòng thử lại!");
+          alert("Lỗi kết nối hoặc Firebase Rules chặn ghi: " + error.message);
         } finally {
           submitBtn.disabled = false;
           submitBtn.innerHTML = originalBtnContent;
@@ -830,24 +837,31 @@
       });
     }
 
-    // 8. Realtime Firestore Listener (Lắng nghe độc lập luubuot & rsvps)
+    // 8. Realtime Firestore Listener (Đồng bộ hóa hiển thị Sổ lưu bút & Danh sách tham dự từ collection luubuot)
     db.collection("luubuot")
       .orderBy("createdAt", "desc")
       .limit(50)
       .onSnapshot((snapshot) => {
         const wishesContainer = document.getElementById("wishes-container");
+        const attendeesContainer = document.getElementById("attendees-container");
         const wishCount = document.getElementById("wish-count");
+        const attendeeCount = document.getElementById("attendee-count");
 
-        if (!wishesContainer) return;
+        if (!wishesContainer || !attendeesContainer) return;
 
         if (snapshot.empty) {
           wishCount.textContent = "0 lời chúc";
+          attendeeCount.textContent = "0 người";
           wishesContainer.innerHTML = '<p style="color: var(--muted); font-style: italic;">Chưa có lời chúc nào. Hãy là người đầu tiên gửi nhé!</p>';
+          attendeesContainer.innerHTML = '<p style="color: var(--muted);">Chưa có người đăng ký.</p>';
           return;
         }
 
         wishCount.textContent = `${snapshot.size} lời chúc`;
+        attendeeCount.textContent = `${snapshot.size} người`;
+
         let wishesHTML = "";
+        let attendeesHTML = "";
 
         snapshot.forEach((doc) => {
           const item = doc.data();
@@ -870,30 +884,7 @@
               <span class="wish-time">${timeStr}</span>
             </div>
           `;
-        });
-        wishesContainer.innerHTML = wishesHTML;
-      });
 
-    db.collection("rsvps")
-      .orderBy("createdAt", "desc")
-      .limit(50)
-      .onSnapshot((snapshot) => {
-        const attendeesContainer = document.getElementById("attendees-container");
-        const attendeeCount = document.getElementById("attendee-count");
-
-        if (!attendeesContainer) return;
-
-        if (snapshot.empty) {
-          attendeeCount.textContent = "0 người";
-          attendeesContainer.innerHTML = '<p style="color: var(--muted);">Chưa có người đăng ký.</p>';
-          return;
-        }
-
-        attendeeCount.textContent = `${snapshot.size} người`;
-        let attendeesHTML = "";
-
-        snapshot.forEach((doc) => {
-          const item = doc.data();
           attendeesHTML += `
             <div class="attendee-item">
               <span class="attendee-name">✓ ${escapeHtml(item.name)}</span>
@@ -901,7 +892,11 @@
             </div>
           `;
         });
+
+        wishesContainer.innerHTML = wishesHTML;
         attendeesContainer.innerHTML = attendeesHTML;
+      }, (error) => {
+        console.error("Lỗi Firestore listener: ", error);
       });
   </script>
 </body>
